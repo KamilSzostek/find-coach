@@ -1,0 +1,32 @@
+@mixin form {
+    padding: 3em 1em;
+    border: 1px solid #3333336e;
+    border-radius: 1em;
+
+    .form-control {
+        display: flex;
+        flex-direction: column;
+        border: none;
+        font-size: 1.4rem;
+
+        label {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        input:focus,
+        input:hover {
+            background: rgba(65, 105, 225, 0.226);
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+
+            &:hover,
+            &:focus {
+                background: rgba(65, 105, 225, 0.226);
+            }
+        }
+    }
+}
