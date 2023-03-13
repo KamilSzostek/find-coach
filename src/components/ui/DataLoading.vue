@@ -11,8 +11,8 @@ export default {};
 
 <style lang="scss" scoped>
 .loading {
-  position: fixed;
-  top: 50vh;
+  position: absolute;
+  top: 50%;
   left: calc(50% - 35px);
   width: 70px;
   height: 70px;

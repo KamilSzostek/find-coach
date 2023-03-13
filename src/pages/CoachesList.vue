@@ -6,8 +6,11 @@
         <BaseButton :isColored="false" :isLarge="true" @click="getData"
           >refresh</BaseButton
         >
-        <BaseButton :isColored="true" :isLarge="true">
+        <BaseButton v-if="getAuthentication" :isColored="true" :isLarge="true">
           <RouterLink to="/register">register as a coach</RouterLink>
+        </BaseButton>
+        <BaseButton v-else :isColored="true" :isLarge="true">
+          <RouterLink to="/auth/sign">Sign up</RouterLink>
         </BaseButton>
       </div>
       <template v-if="isDataLoaded">
@@ -51,22 +54,18 @@
 import { mapGetters } from "vuex";
 import CoachCard from "@/components/coaches/CoachCard.vue";
 import AreasElement from "@/components/coaches/AreasElement.vue";
-import BaseButton from "@/components/ui/BaseButton.vue";
 import CoachesFilter from "@/components/coaches/CoachesFilter.vue";
 import CoachInfo from "@/components/coaches/CoachInfo.vue";
-import ModalAlert from "@/components/ui/ModalAlert.vue";
-import DataLoading from "@/components/ui/DataLoading.vue";
 import axios from "axios";
+import BaseButton from "@/components/ui/BaseButton.vue";
 
 export default {
   components: {
     CoachCard,
     AreasElement,
-    BaseButton,
     CoachesFilter,
     CoachInfo,
-    ModalAlert,
-    DataLoading,
+    BaseButton,
   },
   data() {
     return {
@@ -78,9 +77,12 @@ export default {
     this.getData();
   },
   computed: {
-    ...mapGetters(["getCoaches"]),
+    ...mapGetters(["getCoaches", "getAuthentication"]),
   },
   methods: {
+    signout() {
+      this.$store.dispatch("signout");
+    },
     toggleModal() {
       this.isModalOpen = !this.isModalOpen;
     },
@@ -115,6 +117,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .shadow {
+  position: relative;
+  min-height: 300px;
   padding: 2em 5em;
   border-radius: 2em;
   box-shadow: 0 0 10px #3333337c;

@@ -56,10 +56,10 @@ export default {
     sendRequest() {
       const message = this.$refs.message;
       const request = {
-        key: new Date().toISOString(),
         email: this.email,
         message: message.value,
-        date: new Date().toLocaleString()
+        date: new Date().toLocaleString(),
+        coachId: this.$route.params.coachId
       };
       if (this.messageValidation()) {
         this.$store.dispatch("addRequest", request);

@@ -8,7 +8,7 @@
       </p>
       <ul>
         <RequestElement
-          v-for="request in getRequests"
+          v-for="request in activeUserRequests"
           :key="request.key"
           :date="request.date"
           :email="request.email"
@@ -17,13 +17,13 @@
       </ul>
     </template>
     <DataLoading v-else />
-    <ModalAlert :isOpen="isModalOpen" @close="() => toggleModal()">
+    <ModalAlert :isOpen="showModal" @close="toggleModal">
       <template v-slot:header>
         <h2>An error occurred!</h2>
       </template>
-      <p class="ms-3 mt-4 fs-3 text-normal">Failed to fetch!</p>
+      <p class="ms-3 mt-4 fs-3 text-normal">{{ getError }}</p>
       <template v-slot:footer>
-        <BaseButton :isColored="true" :isLarge="true" @click="toggleModal"
+        <BaseButton :isColored="true" :isLarge="true" @click="closeModal"
           >Close</BaseButton
         >
       </template>
@@ -33,51 +33,49 @@
 
 <script>
 import RequestElement from "@/components/requests/RequestElement.vue";
-import DataLoading from "@/components/ui/DataLoading.vue";
-import ModalAlert from "@/components/ui/ModalAlert.vue";
-import BaseButton from "@/components/ui/BaseButton.vue";
 import { mapGetters } from "vuex";
-import axios from "axios";
 
 export default {
-  components: { RequestElement, DataLoading, ModalAlert, BaseButton },
+  components: { RequestElement },
   data() {
     return {
       isReqestLoaded: false,
-      isModalOpen: false,
+      isModalOpen: true,
     };
   },
   created() {
     this.getData();
   },
   computed: {
-    ...mapGetters(["getRequests"]),
+    ...mapGetters(["getRequests", "userId", "getError"]),
     hasRequests() {
       return this.getRequests.length <= 0;
     },
+    activeUserRequests() {
+      const requestsArr = [];
+      for (const request of Object.entries(this.getRequests)) {
+        requestsArr.unshift(request.pop());
+      }
+      return requestsArr.filter((request) => request.coachId === this.userId);
+    },
+    showModal() {
+      return !!this.getError && this.isModalOpen;
+    },
   },
   methods: {
-    getData() {
-      axios
-        .get(
-          "https://find-coach-9f124-default-rtdb.europe-west1.firebasedatabase.app/requests.json"
-        )
-        .then((response) => {
-          if (response.status === 200) {
-            this.isReqestLoaded = true;
-            this.$store.dispatch("setRequests", response.data);
-          }
-        })
-        .catch(() => {
-          this.isModalOpen = true;
-          this.isReqestLoaded = true;
-        });
+    async getData() {
+      await this.$store.dispatch("setRequests");
+      this.isReqestLoaded = true;
+    },
+    closeModal() {
+      this.isModalOpen = false;
     },
   },
 };
 </script>
 <style lang="scss" scoped>
 .requests {
+  position: relative;
   min-height: 300px;
   border-radius: 2em;
   box-shadow: 0 0 10px #33333379;

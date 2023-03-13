@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import CoachesList from '../pages/CoachesList.vue';
-import CoachContact from '@/pages/CoachContact.vue';
-import RequestsList from '../pages/RequestsList.vue';
-import RegisterCoach from '../pages/RegisterCoach.vue';
-import RequestsListVue from '../pages/RequestsList.vue';
-import NotFound from '@/pages/NotFound.vue';
+import store from '@/store/store';
+
+const CoachesList = ()=> import('../pages/CoachesList.vue')
+const NotFound  = ()=> import('@/pages/NotFound.vue')
+const CoachContact = ()=> import('@/pages/CoachContact.vue')
+const RequestsList = ()=> import('../pages/RequestsList.vue')
+const RegisterCoach = ()=> import('../pages/RegisterCoach.vue')
+const UserAuth = ()=> import('@/pages/auth/UserAuth.vue')
 
 const router = createRouter({
   history: createWebHistory(),
@@ -31,18 +33,16 @@ const router = createRouter({
     {
       path: '/register',
       name: 'register',
-      component: RegisterCoach
+      component: RegisterCoach,
+      meta: { requiresAuth: true}
     },
     {
       path: '/requests',
       name: 'requests',
-      component: RequestsListVue
+      component: RequestsList,
+      meta: { requiresAuth: true}
     },
-    {
-      path: '/requests',
-      name: 'requests',
-      component: RequestsList
-    },
+    { path: '/auth/:mode', component: UserAuth, props:true, meta: { requiresUnauth: true} },
     { path: '/:notFound(.*)', component: NotFound }
   ],
   linkActiveClass: 'active',
@@ -51,6 +51,16 @@ const router = createRouter({
       return savedPosition
     else
       return { left: 0, top: 0 }
+  }
+})
+
+router.beforeEach(function (to, _, next) {
+  if (to.meta.requiresAuth && !store.getters.getAuthentication) {
+    next('/auth/login');
+  } else if (to.meta.requiresUnauth && store.getters.isAuthenticated) {
+    next('/coaches');
+  } else {
+    next();
   }
 })
 

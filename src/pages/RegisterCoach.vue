@@ -112,7 +112,6 @@ export default {
         this.areasValidation()
       ) {
         const coach = {
-          id: new Date().toISOString(),
           firstName: this.name,
           lastName: this.surname,
           areas: this.areas,

@@ -6,7 +6,9 @@
 
     <div>
       <NavButton link="/coaches">all coaches</NavButton>
-      <NavButton link="/requests">Requests</NavButton>
+      <NavButton v-if="isLogin" link="/requests">Requests</NavButton>
+      <NavButton v-else link="/auth/login">Login</NavButton>
+      <NavButton v-show="isLogin" link="/" @click="logout">Logout</NavButton>
     </div>
   </header>
 </template>
@@ -16,6 +18,21 @@ import NavButton from "../ui/NavButton.vue";
 
 export default {
   components: { NavButton },
+  data() {
+    return {
+      auth: null,
+    };
+  },
+  computed: {
+    isLogin() {
+      return this.$store.getters.getAuthentication;
+    },
+  },
+  methods: {
+    logout() {
+      this.$store.dispatch("signout");
+    },
+  },
 };
 </script>
 

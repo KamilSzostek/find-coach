@@ -1,9 +1,12 @@
 <script>
-import BaseHeader from "./components/header/base-header.vue";
+import BaseHeader from "./components/header/BaseHeader.vue";
 
 export default {
   components: {
     BaseHeader,
+  },
+  created() {
+    this.$store.dispatch("tryLogin");
   },
 };
 </script>
