@@ -111,8 +111,10 @@ export default {
                 token: null,
                 userId: null,
             })
-            if (context.getters.autoLogout)
+            if (context.getters.autoLogout) {
                 router.replace('/coaches')
+                context.commit('setAutoLogout', false)
+            }
         }
     }
 }
